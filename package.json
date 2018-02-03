@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/NicolasLeRoux/rpas#readme",
   "dependencies": {
-    "websocket": "^1.0.25"
+    "websocket": "^1.0.25",
+    "wrtc": "0.0.65"
   }
 }
