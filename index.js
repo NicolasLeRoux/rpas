@@ -5,6 +5,7 @@ var ws = new WebSocketClient();
 ws.on('connect', function(connection) {
 	connection.send(JSON.stringify({
 		type: 'DRONE',
+		action: 'INIT_SOCKET',
 		name: 'Drone 001'
 	}));
 });
