@@ -1,5 +1,6 @@
 const WebSocketClient = require('websocket').client,
-	wrtc = require('wrtc');
+	wrtc = require('wrtc'),
+	fs = require('fs');
 
 let ws = new WebSocketClient(),
 	peerCo,
@@ -35,6 +36,12 @@ const processSocketMessage = function (json, connec) {
 
 			videoChannel.onopen = function () {
 				console.info('Video channel opened.');
+
+				fs.readFile('img/Sfeir.jpg', function(err, data) {
+					if (err) throw err;
+					var str = data.toString('base64');
+					videoChannel.send(str.slice(0, 50000))
+				});
 			};
 			videoChannel.onclose = function () {
 				console.info('Video channel closed.');
