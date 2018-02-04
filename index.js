@@ -24,7 +24,7 @@ ws.on('connect', function(connec) {
 const processSocketMessage = function (json, connec) {
 	switch (json.action) {
 		case 'INIT_PEER_CO':
-			var desc = new wrtc.RTCSessionDescription(json.localDescription);
+			var remoteDescription = new wrtc.RTCSessionDescription(json.remoteDescription);
 			peerCo = new wrtc.RTCPeerConnection();
 
 			peerCo.onicecandidate = function (event) {
@@ -39,7 +39,7 @@ const processSocketMessage = function (json, connec) {
 				}
 			};
 
-			peerCo.setRemoteDescription(desc)
+			peerCo.setRemoteDescription(remoteDescription)
 				.then(function() {
 					console.log('Create WebRTC answer.');
 					return peerCo.createAnswer();
@@ -49,13 +49,19 @@ const processSocketMessage = function (json, connec) {
 				}).then(() => {
 					console.info('Set server remote desc from client answer');
 					connec.send(JSON.stringify(Object.assign(json, {
-						localDescription: pc.localDescription
+						remoteDescription: peerCo.localDescription
 					})));
 				});
 
 			break;
 		case 'RTC_ICE_CANDIDATE':
 			console.log('RTC_ICE_CANDIDATE');
+			peerCo.addIceCandidate(json.candidate)
+				.then(() => {
+					console.info('Adding ICE candidate success ! Info: ', json.candidate);
+				}).catch(error => {
+					console.warn('ICE candidate error: ', error);
+				});
 			break;
 		default:
 			console.error('Undefined action...');
