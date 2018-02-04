@@ -27,6 +27,35 @@ const processSocketMessage = function (json, connec) {
 			var remoteDescription = new wrtc.RTCSessionDescription(json.remoteDescription);
 			peerCo = new wrtc.RTCPeerConnection();
 
+			videoChannel = peerCo.createDataChannel('video', {
+				// UPD Semantics
+				ordered: false,
+				maxRetransmits: 0
+			});
+
+			videoChannel.onopen = function () {
+				console.info('Video channel opened.');
+			};
+			videoChannel.onclose = function () {
+				console.info('Video channel closed.');
+			};
+
+			peerCo.ondatachannel = function (event) {
+				console.info('Serveur get data channel', event);
+
+				var channel = event.channel;
+
+				channel.onmessage = function (e) {
+					console.info('Command channel on message: ', e.data);
+				};
+				channel.onopen = function () {
+					console.info('Command channel on open');
+				};
+				channel.onclose = function () {
+					console.info('Command channel on close');
+				};
+			};
+
 			peerCo.onicecandidate = function (event) {
 				console.info('Client on ICE candidate', event);
 
@@ -64,7 +93,9 @@ const processSocketMessage = function (json, connec) {
 				});
 			break;
 		default:
-			console.error('Undefined action...');
+			console.error('Undefined action... ', {
+				action: json.action
+			});
 	}
 };
 
