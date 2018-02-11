@@ -4,7 +4,9 @@
   "description": "TODO",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm run start:heroku",
+    "start:heroku": "node index.js --url wss://rpaswui.herokuapp.com",
+    "start:local": "node index.js --url ws://localhost:3000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

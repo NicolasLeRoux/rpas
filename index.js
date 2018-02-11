@@ -3,8 +3,20 @@ const WebSocketClient = require('websocket').client,
 	fs = require('fs');
 
 let ws = new WebSocketClient(),
+	wsUrl,
 	peerCo,
 	videoChannel;
+
+// print process.argv
+process.argv.forEach(function (val, index, array) {
+	switch (val) {
+		case '--url':
+			wsUrl = array[index + 1];
+			break;
+		default:
+			// Nothing...
+	}
+});
 
 ws.on('connect', function(connec) {
 	connec.on('message', function(message) {
@@ -106,4 +118,4 @@ const processSocketMessage = function (json, connec) {
 	}
 };
 
-ws.connect('ws://localhost:3000/', 'echo-protocol');
+ws.connect(wsUrl, 'echo-protocol');
