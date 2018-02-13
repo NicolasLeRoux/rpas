@@ -22,5 +22,3 @@ Démarrer l'application avec la commande ``npm run start:local``.
 ### Remote (Heroku)
 
 Démarrer l'application avec la commande ``npm start``.
-
-Test
