@@ -30,7 +30,9 @@ ws.on('connect', function(connec) {
 	connec.send(JSON.stringify({
 		type: 'DRONE',
 		action: 'INIT_SOCKET',
-		name: 'Drone 001'
+		name: `Drone ${Math.random() * (new Date()).getDate()}`,
+		geo: '48°52′51.118″N/2°16′1.032″E',
+		status: 'Online'
 	}));
 });
 
