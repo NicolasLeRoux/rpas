@@ -20,7 +20,10 @@ Mettre à jour les packets Raspbian (`sudo apt-get update` et `sudo apt-get upgr
 Les packets suivant sont aussi nécessaire:
 
 ```sh
-sudo apt-get install cmake
+sudo apt-get install cmake build-essential libglib2.0-dev libgtk2.0-dev libxtst-dev \
+    libxss-dev libpci-dev libdbus-1-dev libgconf2-dev \
+    libgnome-keyring-dev libnss3-dev libasound2-dev libpulse-dev \
+    libudev-dev
 ```
 
 Ensuite, installer `nvm` ([Node Version Manager](https://github.com/creationix/nvm))
@@ -62,3 +65,8 @@ Démarrer l'application avec la commande ``npm run start:local``.
 ### Remote (Heroku)
 
 Démarrer l'application avec la commande ``npm start``.
+
+
+## Annex
+
+Build `node-webrtc` [here](https://github.com/js-platform/node-webrtc/wiki/Building)
