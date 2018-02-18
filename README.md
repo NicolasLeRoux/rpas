@@ -83,6 +83,53 @@ pantilthat.tilt(-12) # From -90 to 90
 ```
 
 
+## RabbitMQ
+
+Afin d'excécuter les applications `Python` et `Node` dans des process séparés, un
+`message broker` est utilisé pour effectuer la communication entre eux. Ici, c'est
+RabbitMQ notre `message broker`, avec `amqplib` pour l'intégration avec `Node` et
+`pika` pour `Python`. Cf [medium](https://medium.com/@HolmesLaurence/integrating-node-and-python-6b8454bfc272)
+
+RabbitMQ implémente entre autre le protocole AMQP qui permet de transporter des
+messages contenant de l’information. Ce transport se fait de point à point ou bien
+sur le principe de l’abonnement à un type de message.
+
+
+### install
+
+Télécharger l’archive. La dernière version est la 3.1.5.:
+
+```sh
+wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/rabbitmq-server_3.1.5-1_all.deb
+```
+
+Installer les paquets supplémentaires:
+
+```sh
+apt-get install -y erlang logrotate
+```
+
+Installer RabbitMQ:
+
+```sh
+dpkg -i rabbitmq-server_3.1.5-1_all.deb
+```
+
+Activer les plugins de gestion du serveur:
+
+```sh
+rabbitmq-plugins enable rabbitmq_management
+```
+
+Puis redémarrer le service:
+
+```sh
+service rabbitmq-server restart
+```
+
+Pour accéder au Raspberry Pi, aller à l’adresse `http://<ip du raspberry>:15672/#/`
+
+
 ## Annex
 
 Build `node-webrtc` [here](https://github.com/js-platform/node-webrtc/wiki/Building)
