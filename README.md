@@ -26,6 +26,8 @@ sudo apt-get install cmake build-essential libglib2.0-dev libgtk2.0-dev libxtst-
     libudev-dev
 ```
 
+Cf build [libwebrtc](https://github.com/aisouard/libwebrtc)
+
 Ensuite, installer `nvm` ([Node Version Manager](https://github.com/creationix/nvm))
 via la commande suivante:
 
