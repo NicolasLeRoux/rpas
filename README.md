@@ -67,6 +67,20 @@ Démarrer l'application avec la commande ``npm run start:local``.
 Démarrer l'application avec la commande ``npm start``.
 
 
+## PanTiltHat
+
+Lien vers la documentation [ici](http://docs.pimoroni.com/pantilthat/)
+
+Exemple de code python:
+
+```python
+import pantilthat
+
+pantilthat.pan(25) # From -90 to 90
+pantilthat.tilt(-12) # From -90 to 90
+```
+
+
 ## Annex
 
 Build `node-webrtc` [here](https://github.com/js-platform/node-webrtc/wiki/Building)
