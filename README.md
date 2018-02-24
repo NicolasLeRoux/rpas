@@ -13,7 +13,7 @@ Pour effectuer l'installation sur une machine local, la première étape consist
 installer les dépendances node avec la commande `npm i`.
 
 Ensuite, effectuer l'install de la librairie `node-webrtc` globalement avec la
-commande `npm i -g node-webrtc`.
+commande `npm i -g wrtc`.
 
 
 ### Raspberry Pi 3
@@ -61,7 +61,7 @@ npm install
 Puis, pour référencer la lib `wrtc` dans node, lancer la commande:
 
 ```sh
-npm i -g node-webrtc
+npm i -g wrtc
 ```
 
 
