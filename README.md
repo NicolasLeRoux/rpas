@@ -9,24 +9,16 @@ Embedded system.
 
 ### Local
 
-Pour effectuer l'installation sur une machine local, la première (et seul) étape
-consiste à installer les dépendances node avec la commande ``npm i``.
+Pour effectuer l'installation sur une machine local, la première étape consiste à
+installer les dépendances node avec la commande `npm i`.
+
+Ensuite, effectuer l'install de la librairie `node-webrtc` globalement avec la
+commande `npm i -g node-webrtc`.
 
 
 ### Raspberry Pi 3
 
 Mettre à jour les packets Raspbian (`sudo apt-get update` et `sudo apt-get upgrade`).
-
-Les packets suivant sont aussi nécessaire:
-
-```sh
-sudo apt-get install cmake build-essential libglib2.0-dev libgtk2.0-dev libxtst-dev \
-    libxss-dev libpci-dev libdbus-1-dev libgconf2-dev \
-    libgnome-keyring-dev libnss3-dev libasound2-dev libpulse-dev \
-    libudev-dev
-```
-
-Cf build [libwebrtc](https://github.com/aisouard/libwebrtc)
 
 Ensuite, installer `nvm` ([Node Version Manager](https://github.com/creationix/nvm))
 via la commande suivante:
@@ -53,6 +45,24 @@ git clone https://github.com/NicolasLeRoux/rpas.git
 Puis, se déplacer dans le projet `rpas`.
 
 Lancer la commande d'installation des dépendances node (`npm i`).
+
+Ensuite; il est nécessaire d'installer la librairie `node-webrtc` globalement. Par
+contre, ce n'est pas la librairie officiel, mais un fork de cette dernière spécifique
+à l'architecture du raspberry pi 3.
+
+```sh
+cd /home/pi/.nvm/versions/node/v9.5.0/lib/node_modules/
+git clone https://github.com/ssaroha/node-webrtc.git
+cd node-webrtc
+gunzip third_party/webrtc/lib/libwebrtc.a.gz
+npm install
+```
+
+Puis, pour référencer la lib `wrtc` dans node, lancer la commande:
+
+```sh
+npm i -g node-webrtc
+```
 
 
 ## Start
