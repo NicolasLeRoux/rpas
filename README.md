@@ -105,7 +105,21 @@ messages contenant de l’information. Ce transport se fait de point à point ou
 sur le principe de l’abonnement à un type de message.
 
 
-### install
+### Install
+
+#### OSX
+
+Installation avec brew:
+
+```sh
+brew update
+brew install rabbitmq
+```
+
+More information [here](https://www.rabbitmq.com/install-homebrew.html).
+
+
+#### Raspberry Pi 3
 
 Télécharger l’archive. La dernière version est la 3.1.5.:
 
