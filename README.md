@@ -116,28 +116,37 @@ wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/rabbitmq-server_3.1
 Installer les paquets supplémentaires:
 
 ```sh
-apt-get install -y erlang logrotate
+sudo apt-get install -y erlang logrotate
 ```
 
 Installer RabbitMQ:
 
 ```sh
-dpkg -i rabbitmq-server_3.1.5-1_all.deb
+sudo dpkg -i rabbitmq-server_3.1.5-1_all.deb
+```
+
+Si vous avez une erreur essayez la commande:
+
+```sh
+sudo apt-get -f install
 ```
 
 Activer les plugins de gestion du serveur:
 
 ```sh
-rabbitmq-plugins enable rabbitmq_management
+sudo rabbitmq-plugins enable rabbitmq_management
 ```
 
 Puis redémarrer le service:
 
 ```sh
-service rabbitmq-server restart
+sudo service rabbitmq-server restart
 ```
 
 Pour accéder au Raspberry Pi, aller à l’adresse `http://<ip du raspberry>:15672/#/`
+avec les identifiants par défaut:
+- Username `guest`
+- Password `guest`
 
 
 ## Annex
