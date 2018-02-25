@@ -27,16 +27,16 @@ def callback(ch, method, properties, body):
 	if requestParams['type'] == 'COMMAND':
 		direction = requestParams['direction']
 
-		if direction == 'up':
+		if direction == 'left':
 			if tiltAngle < 50:
 				tiltAngle = tiltAngle + 5
-		elif direction == 'down':
+		elif direction == 'right':
 			if tiltAngle > -50:
 				tiltAngle = tiltAngle - 5
-		elif direction == 'left':
+		elif direction == 'up':
 			if panAngle < 50:
 				panAngle = panAngle + 5
-		elif direction == 'right':
+		elif direction == 'down':
 			if panAngle > -50:
 				panAngle = panAngle - 5
 
