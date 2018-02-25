@@ -51,17 +51,12 @@ contre, ce n'est pas la librairie officiel, mais un fork de cette dernière spé
 à l'architecture du raspberry pi 3.
 
 ```sh
-cd /home/pi/.nvm/versions/node/v9.5.0/lib/node_modules/
+cd ~
 git clone https://github.com/ssaroha/node-webrtc.git
 cd node-webrtc
 gunzip third_party/webrtc/lib/libwebrtc.a.gz
 npm install
-```
-
-Puis, pour référencer la lib `wrtc` dans node, lancer la commande:
-
-```sh
-npm i -g wrtc
+npm link
 ```
 
 
