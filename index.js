@@ -1,11 +1,13 @@
 const WebSocketClient = require('websocket').client,
 	wrtc = require('wrtc'),
-	fs = require('fs');
+	fs = require('fs'),
+	amqp = require('amqplib/callback_api');
 
 let ws = new WebSocketClient(),
 	wsUrl,
 	peerCo,
-	videoChannel;
+	videoChannel,
+	messageBrokerChannel;
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -68,6 +70,7 @@ const processSocketMessage = function (json, connec) {
 
 				channel.onmessage = function (e) {
 					console.info('Command channel on message: ', e.data);
+					sendToBroker(e.data);
 				};
 				channel.onopen = function () {
 					console.info('Command channel on open');
@@ -119,5 +122,19 @@ const processSocketMessage = function (json, connec) {
 			});
 	}
 };
+
+amqp.connect('amqp://localhost', function (err, conn) {
+	conn.createChannel(function (err, ch) {
+		messageBrokerChannel = ch;
+
+		ch.assertQueue('pantilthat', {
+			durable: false
+		});
+	});
+});
+
+function sendToBroker (obj) {
+	messageBrokerChannel.sendToQueue('pantilthat', new Buffer(JSON.stringify(obj)));
+}
 
 ws.connect(wsUrl, 'echo-protocol');
