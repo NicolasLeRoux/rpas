@@ -134,7 +134,7 @@ amqp.connect('amqp://localhost', function (err, conn) {
 });
 
 function sendToBroker (obj) {
-	messageBrokerChannel.sendToQueue('pantilthat', new Buffer(JSON.stringify(obj)));
+	messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
 }
 
 ws.connect(wsUrl, 'echo-protocol');

@@ -14,16 +14,42 @@ channel.queue_declare(queue='pantilthat')
 # pantilthat.servo_enable(1, True)
 # pantilthat.servo_enable(2, True)
 
-#pantilthat.pan(panAngle)
-#pantilthat.tilt(tiltAngle)
-
 # pantilthat.servo_enable(1, False)
 # pantilthat.servo_enable(2, False)
 
 def callback(ch, method, properties, body):
-	requestParams = json.loads(body.decode('utf-8'))
+	global panAngle
+	global tiltAngle
 
-	print(requestParams)
+	bodyStr = body.decode('utf-8')
+	requestParams = json.loads(bodyStr)
+
+	if requestParams['type'] == 'COMMAND':
+		direction = requestParams['direction']
+
+		if direction == 'up':
+			if tiltAngle < 50:
+				tiltAngle = tiltAngle + 5
+		elif direction == 'down':
+			if tiltAngle > -50:
+				tiltAngle = tiltAngle - 5
+		elif direction == 'left':
+			if panAngle < 50:
+				panAngle = panAngle + 5
+		elif direction == 'right':
+			if panAngle > -50:
+				panAngle = panAngle - 5
+
+		move()
+
+def move():
+	global panAngle
+	global tiltAngle
+
+	pantilthat.pan(panAngle)
+	pantilthat.tilt(tiltAngle)
+
+move()
 
 # receive message and complete simulation
 channel.basic_consume(callback, queue='pantilthat', no_ack=True)
