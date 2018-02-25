@@ -33,10 +33,10 @@ def callback(ch, method, properties, body):
 		elif direction == 'right':
 			if tiltAngle > -50:
 				tiltAngle = tiltAngle - 5
-		elif direction == 'up':
+		elif direction == 'down':
 			if panAngle < 50:
 				panAngle = panAngle + 5
-		elif direction == 'down':
+		elif direction == 'up':
 			if panAngle > -50:
 				panAngle = panAngle - 5
 
