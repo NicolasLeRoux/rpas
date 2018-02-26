@@ -1,0 +1,12 @@
+[Unit]
+Description=Remotly Piloted Aircraft System
+After=multi-user.target
+ 
+[Service]
+Type=simple
+ExecStart=./srv/rpas/scripts/start.sh
+Restart=on-abort
+ 
+[Install]
+WantedBy=multi-user.target
+
