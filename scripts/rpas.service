@@ -6,6 +6,7 @@ After=multi-user.target
 Type=simple
 ExecStart=/bin/bash /srv/rpas/scripts/start.sh
 Restart=on-abort
+User=pi
 
 [Install]
 WantedBy=multi-user.target

@@ -1,11 +1,12 @@
 [Unit]
 Description=Pan tilt hat
 After=multi-user.target
- 
+
 [Service]
 Type=simple
 ExecStart=/usr/bin/python /srv/rpas/scripts/panTiltHat.py
 Restart=on-abort
- 
+User=pi
+
 [Install]
 WantedBy=multi-user.target
