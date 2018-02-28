@@ -37,6 +37,7 @@
   "homepage": "https://github.com/NicolasLeRoux/rpas#readme",
   "dependencies": {
     "amqplib": "^0.5.2",
+    "opencv": "^6.0.0",
     "websocket": "^1.0.25"
   },
   "peerDependencies": {

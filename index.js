@@ -1,7 +1,8 @@
 const WebSocketClient = require('websocket').client,
 	wrtc = require('wrtc'),
 	fs = require('fs'),
-	amqp = require('amqplib/callback_api');
+	amqp = require('amqplib/callback_api'),
+	opencv = require('opencv');
 
 let ws = new WebSocketClient(),
 	wsUrl,
@@ -53,11 +54,33 @@ const processSocketMessage = function (json, connec) {
 			videoChannel.onopen = function () {
 				console.info('Video channel opened.');
 
-				fs.readFile('img/Sfeir.jpg', function(err, data) {
+				/*fs.readFile('img/Sfeir.jpg', function(err, data) {
 					if (err) throw err;
 					var str = data.toString('base64');
 					videoChannel.send(str.slice(0, 50000))
+				});*/
+				var videoStream = new opencv.VideoStream(0);
+
+				/**
+				 * J'obtient ici une image de 480*640 alors que je souhaite
+				 * avoir une image de 568*320.
+				 */
+				videoStream.video.setWidth(430);
+				videoStream.video.setHeight(320);
+				videoStream.on('data', function (matrix) {
+					// Ici, trop de data en une seul fois...
+					// https://github.com/js-platform/node-webrtc/issues/156
+					// Le Buffer est une class node !!!
+					var str = matrix.toBuffer({
+							ext: '.jpg',
+							jpegQuality: 50
+						}).toString('base64');
+
+					//console.log('Taille de la chaine: ', str.length);
+					videoChannel.send(str.slice(0, 50000));
 				});
+
+				videoStream.read();
 			};
 			videoChannel.onclose = function () {
 				console.info('Video channel closed.');
