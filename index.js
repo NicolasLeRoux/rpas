@@ -8,7 +8,10 @@ let ws = new WebSocketClient(),
 	wsUrl,
 	peerCo,
 	videoChannel,
-	messageBrokerChannel;
+	messageBrokerChannel,
+    videoStream = new opencv.VideoStream(0),
+    videoChannels = [],
+    isVideoStreamOn = false;
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -20,6 +23,9 @@ process.argv.forEach(function (val, index, array) {
 			// Nothing...
 	}
 });
+
+videoStream.video.setWidth(430);
+videoStream.video.setHeight(320);
 
 ws.on('connect', function(connec) {
 	connec.on('message', function(message) {
@@ -54,36 +60,13 @@ const processSocketMessage = function (json, connec) {
 			videoChannel.onopen = function () {
 				console.info('Video channel opened.');
 
-				/*fs.readFile('img/Sfeir.jpg', function(err, data) {
-					if (err) throw err;
-					var str = data.toString('base64');
-					videoChannel.send(str.slice(0, 50000))
-				});*/
-				var videoStream = new opencv.VideoStream(0);
-
-				/**
-				 * J'obtient ici une image de 480*640 alors que je souhaite
-				 * avoir une image de 568*320.
-				 */
-				videoStream.video.setWidth(430);
-				videoStream.video.setHeight(320);
-				videoStream.on('data', function (matrix) {
-					// Ici, trop de data en une seul fois...
-					// https://github.com/js-platform/node-webrtc/issues/156
-					// Le Buffer est une class node !!!
-					var str = matrix.toBuffer({
-							ext: '.jpg',
-							jpegQuality: 50
-						}).toString('base64');
-
-					//console.log('Taille de la chaine: ', str.length);
-					videoChannel.send(str.slice(0, 50000));
-				});
-
-				videoStream.read();
+                videoChannels.push(videoChannel);
+                startVideoStream();
 			};
 			videoChannel.onclose = function () {
 				console.info('Video channel closed.');
+
+                videoChannels.splice(videoChannels.indexOf(videoChannel), 1);
 			};
 
 			peerCo.ondatachannel = function (event) {
@@ -158,6 +141,28 @@ amqp.connect('amqp://localhost', function (err, conn) {
 
 function sendToBroker (obj) {
 	messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
+}
+
+function startVideoStream () {
+    if (!isVideoStreamOn) {
+        videoStream.on('data', function (matrix) {
+            // Ici, trop de data en une seul fois...
+            // https://github.com/js-platform/node-webrtc/issues/156
+            // Le Buffer est une class node !!!
+            var str = matrix.toBuffer({
+                    ext: '.jpg',
+                    jpegQuality: 50
+                }).toString('base64');
+
+            //console.log('Taille de la chaine: ', str.length);
+            videoChannels.forEach((channel) => {
+                channel.send(str.slice(0, 50000));
+            });
+        });
+
+        isVideoStreamOn = true;
+        videoStream.read();
+    }
 }
 
 ws.connect(wsUrl, 'echo-protocol');
