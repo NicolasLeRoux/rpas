@@ -20,17 +20,11 @@ commande `npm i -g wrtc`.
 
 Mettre à jour les packets Raspbian (`sudo apt-get update` et `sudo apt-get upgrade`).
 
-Ensuite, installer `nvm` ([Node Version Manager](https://github.com/creationix/nvm))
-via la commande suivante:
+Ensuite, installer `nodejs` via les commande suivante:
 
 ```sh
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-```
-
-Puis, installer la dernière version de node:
-
-```sh
-nvm install 9
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
 Puis, aller dans le répertoire `svr` (Srv is a serve folder. It holds site specific
