@@ -130,13 +130,17 @@ const processSocketMessage = function (json, connec) {
 };
 
 amqp.connect('amqp://localhost', function (err, conn) {
-	conn.createChannel(function (err, ch) {
-		messageBrokerChannel = ch;
+    if (!err) {
+        conn.createChannel(function (err, ch) {
+            messageBrokerChannel = ch;
 
-		ch.assertQueue('pantilthat', {
-			durable: false
-		});
-	});
+            ch.assertQueue('pantilthat', {
+                durable: false
+            });
+        });
+    } else {
+        console.error('Message broker connection refused.', err);
+    }
 });
 
 function sendToBroker (obj) {
