@@ -1,15 +1,26 @@
 const WebSocketClient = require('websocket').client,
 	wrtc = require('wrtc'),
 	fs = require('fs'),
-	amqp = require('amqplib/callback_api'),
+	amqp = require('amqplib/callback_api');
+
+let isOpencvEnabled,
+    opencv;
+
+// Load opencv
+try {
+    isOpencvEnable = true;
 	opencv = require('opencv');
+} catch (err) {
+    isOpencvEnable = false;
+    console.error('[Error] OpenCV not installed.', err);
+}
 
 let ws = new WebSocketClient(),
 	wsUrl,
 	peerCo,
 	videoChannel,
 	messageBrokerChannel,
-    videoStream = new opencv.VideoStream(0),
+    videoStream = isOpencvEnabled ? new opencv.VideoStream(0) : undefined,
     videoChannels = [],
     isVideoStreamOn = false;
 
@@ -24,8 +35,10 @@ process.argv.forEach(function (val, index, array) {
 	}
 });
 
-videoStream.video.setWidth(430);
-videoStream.video.setHeight(320);
+if (isOpencvEnabled) {
+    videoStream.video.setWidth(430);
+    videoStream.video.setHeight(320);
+}
 
 ws.on('connect', function(connec) {
 	connec.on('message', function(message) {
@@ -152,7 +165,7 @@ function sendToBroker (obj) {
 }
 
 function startVideoStream () {
-    if (!isVideoStreamOn) {
+    if (!isVideoStreamOn && isOpencvEnabled) {
         videoStream.on('data', function (matrix) {
             // Ici, trop de data en une seul fois...
             // https://github.com/js-platform/node-webrtc/issues/156
@@ -170,6 +183,12 @@ function startVideoStream () {
 
         isVideoStreamOn = true;
         videoStream.read();
+    } else {
+        fs.readFile('img/Sfeir.jpg', function(err, data) {
+            if (err) throw err;
+            var str = data.toString('base64');
+            videoChannel.send(str.slice(0, 50000))
+        });
     }
 }
 
