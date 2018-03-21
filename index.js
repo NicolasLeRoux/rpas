@@ -139,12 +139,16 @@ amqp.connect('amqp://localhost', function (err, conn) {
             });
         });
     } else {
-        console.error('Message broker connection refused.', err);
+        console.error('[Error] Message broker connection refused.', err);
     }
 });
 
 function sendToBroker (obj) {
-	messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
+    if (messageBrokerChannel) {
+        messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
+    } else {
+        console.warn('[Warning] No message broker.');
+    }
 }
 
 function startVideoStream () {
