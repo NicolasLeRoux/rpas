@@ -184,7 +184,7 @@ function startVideoStream () {
         isVideoStreamOn = true;
         videoStream.read();
     } else {
-        fs.readFile('img/Sfeir.jpg', function(err, data) {
+        fs.readFile('img/Under-construction.jpg', function(err, data) {
             if (err) throw err;
             var str = data.toString('base64');
             videoChannel.send(str.slice(0, 50000))
