@@ -36,8 +36,7 @@ let ws = new WebSocketClient(),
 	videoChannel,
 	messageBrokerChannel,
 	videoStream = isOpencvEnabled ? new opencv.VideoStream(0) : undefined,
-	videoChannels = [],
-	isVideoStreamOn = false;
+	videoChannels = [];
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -252,7 +251,7 @@ function stopMotors () {
 }
 
 function startVideoStream () {
-	if (!isVideoStreamOn && isOpencvEnabled) {
+	if (isOpencvEnabled) {
 		videoStream.on('data', function (matrix) {
 			// Ici, trop de data en une seul fois...
 			// https://github.com/js-platform/node-webrtc/issues/156
@@ -268,7 +267,6 @@ function startVideoStream () {
 			});
 		});
 
-		isVideoStreamOn = true;
 		videoStream.read();
 	} else {
 		fs.readFile('img/Under-construction.jpg', function(err, data) {
