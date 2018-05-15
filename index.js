@@ -234,6 +234,8 @@ function commandMotors (obj) {
 		motor02Speed = force;
 	}
 
+	console.log('Set speed at:', motor01Speed, motor02Speed);
+
 	motor01.setSpeed(motor01Speed, (err, res) => {});
 	motor02.setSpeed(motor02Speed, (err, res) => {});
 
