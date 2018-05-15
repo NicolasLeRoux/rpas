@@ -205,7 +205,7 @@ function sendToBroker (obj) {
  * ```
  */
 function commandMotors (obj) {
-	if (!!obj.direction.direction) return;
+	if (!obj.direction.direction) return;
 
 	let direction = obj.direction.direction.y,
 		rotation = obj.direction.direction.x,
