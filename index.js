@@ -10,7 +10,7 @@ let isOpencvEnabled,
 		address: 0X60,
 		dcs: [
 			'M1',
-			'M2'
+			'M3'
 		]
 	},
 	motorHat = MotorHat(motorSpec),
