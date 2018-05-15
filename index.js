@@ -236,8 +236,8 @@ function commandMotors (obj) {
 
 	console.log('Set speed at:', motor01Speed, motor02Speed);
 
-	motor01.setSpeed(motor01Speed, (err, res) => {});
-	motor02.setSpeed(motor02Speed, (err, res) => {});
+	motor01.setSpeed(Math.ceil(motor01Speed * 100), (err, res) => {});
+	motor02.setSpeed(Math.ceil(motor02Speed * 100), (err, res) => {});
 
 	oldDir = direction;
 }
