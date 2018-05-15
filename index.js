@@ -13,7 +13,7 @@ let isOpencvEnabled,
 			'M2'
 		]
 	},
-	motorhat = MotorHat(motorSpec),
+	motorHat = MotorHat(motorSpec),
 	oldDir;
 
 motorHat.init();
