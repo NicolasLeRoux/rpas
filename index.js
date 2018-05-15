@@ -217,7 +217,7 @@ function commandMotors (obj) {
 	if (direction !== oldDir) {
 		let dir = direction === 'up' ? 'fwd': 'back';
 		motor01.run(dir, (err, res) => {});
-		motor02.run(dir, (err, res) => {});
+		motor02.run(dir === 'fwd' ? 'back' : 'fwd', (err, res) => {});
 	}
 
 	if (direction === 'up' && rotation === 'right') {
