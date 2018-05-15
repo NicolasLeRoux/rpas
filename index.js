@@ -1,18 +1,33 @@
 const WebSocketClient = require('websocket').client,
 	wrtc = require('wrtc'),
 	fs = require('fs'),
-	amqp = require('amqplib/callback_api');
+	amqp = require('amqplib/callback_api')
+	MotorHat = require('motor-hat');
 
 let isOpencvEnabled,
-    opencv;
+	opencv,
+	motorSpec = {
+		address: 0X60,
+		dcs: [
+			'M1',
+			'M2'
+		]
+	},
+	motorhat = MotorHat(motorSpec),
+	oldDir;
+
+motorHat.init();
+
+let motor01 = motorHat.dcs[0],
+	motor02 = motorHat.dcs[1];
 
 // Load opencv
 try {
-    isOpencvEnable = true;
+	isOpencvEnable = true;
 	opencv = require('opencv');
 } catch (err) {
-    isOpencvEnable = false;
-    console.error('[Error] OpenCV not installed.', err);
+	isOpencvEnable = false;
+	console.error('[Error] OpenCV not installed.', err);
 }
 
 let ws = new WebSocketClient(),
@@ -20,9 +35,9 @@ let ws = new WebSocketClient(),
 	peerCo,
 	videoChannel,
 	messageBrokerChannel,
-    videoStream = isOpencvEnabled ? new opencv.VideoStream(0) : undefined,
-    videoChannels = [],
-    isVideoStreamOn = false;
+	videoStream = isOpencvEnabled ? new opencv.VideoStream(0) : undefined,
+	videoChannels = [],
+	isVideoStreamOn = false;
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -36,8 +51,8 @@ process.argv.forEach(function (val, index, array) {
 });
 
 if (isOpencvEnabled) {
-    videoStream.video.setWidth(430);
-    videoStream.video.setHeight(320);
+	videoStream.video.setWidth(430);
+	videoStream.video.setHeight(320);
 }
 
 ws.on('connect', function(connec) {
@@ -73,13 +88,13 @@ const processSocketMessage = function (json, connec) {
 			videoChannel.onopen = function () {
 				console.info('Video channel opened.');
 
-                videoChannels.push(videoChannel);
-                startVideoStream();
+				videoChannels.push(videoChannel);
+				startVideoStream();
 			};
 			videoChannel.onclose = function () {
 				console.info('Video channel closed.');
 
-                videoChannels.splice(videoChannels.indexOf(videoChannel), 1);
+				videoChannels.splice(videoChannels.indexOf(videoChannel), 1);
 			};
 
 			peerCo.ondatachannel = function (event) {
@@ -89,13 +104,16 @@ const processSocketMessage = function (json, connec) {
 
 				channel.onmessage = function (e) {
 					console.info('Command channel on message: ', e.data);
-					sendToBroker(e.data);
+					//sendToBroker(e.data);
+					commandMotors(e.data);
 				};
 				channel.onopen = function () {
 					console.info('Command channel on open');
 				};
 				channel.onclose = function () {
 					console.info('Command channel on close');
+
+					stopMotors();
 				};
 			};
 
@@ -143,53 +161,118 @@ const processSocketMessage = function (json, connec) {
 };
 
 amqp.connect('amqp://localhost', function (err, conn) {
-    if (!err) {
-        conn.createChannel(function (err, ch) {
-            messageBrokerChannel = ch;
+	if (!err) {
+		conn.createChannel(function (err, ch) {
+			messageBrokerChannel = ch;
 
-            ch.assertQueue('pantilthat', {
-                durable: false
-            });
-        });
-    } else {
-        console.error('[Error] Message broker connection refused.', err);
-    }
+			ch.assertQueue('pantilthat', {
+				durable: false
+			});
+		});
+	} else {
+		console.error('[Error] Message broker connection refused.', err);
+	}
 });
 
 function sendToBroker (obj) {
-    if (messageBrokerChannel) {
-        messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
-    } else {
-        console.warn('[Warning] No message broker.');
-    }
+	if (messageBrokerChannel) {
+		messageBrokerChannel.sendToQueue('pantilthat', new Buffer(obj));
+	} else {
+		console.warn('[Warning] No message broker.');
+	}
+}
+
+/**
+ * Method to command the motor.
+ * @param obj A nipple event with the following signature:
+ *
+ * ```json
+ * {
+ *     "type": "COMMAND",
+ *     "direction": {
+ *         "angle":{
+ *             "radian": 1.0071326018005804,
+ *             "degree": 57.70444749320299
+ *         },
+ *         "direction": {
+ *             "x": "right",
+ *             "y": "up",
+ *             "angle": "up"
+ *         },
+ *         "force": 1.0105470320351637
+ *     }
+ * }
+ * ```
+ */
+function commandMotors (obj) {
+	let direction = obj.direction.direction.y,
+		rotation = obj.direction.direction.x,
+		force = Math.min(1, obj.direction.force),
+		radian = obj.direction.angle.radian,
+		motor01Speed,
+		motor02Speed;
+
+	if (direction !== oldDir) {
+		let dir = direction === 'up' ? 'fwd': 'back';
+		motor01.run(dir, (err, res) => {});
+		motor01.run(dir, (err, res) => {});
+	}
+
+	if (direction === 'up' && rotation === 'right') {
+		motor01Speed = force;
+		motor02Speed = force * (1 - Math.cos(radian));
+	} else if (direction === 'up' && rotation === 'left') {
+		motor01Speed = force  * (1 - Math.cos(Math.PI - radian));
+		motor02Speed = force;
+	} else if (direction === 'down' && rotation === 'right') {
+		motor01Speed = force;
+		motor02Speed = force  * (1 - Math.cos(2*Math.PI - radian));
+	} else if (direction === 'down' && rotation === 'left') {
+		motor01Speed = force * (1 - Math.cos(radian - Math.PI));
+		motor02Speed = force;
+	}
+
+	motor01.setSpeed(motor01Speed, (err, res) => {});
+	motor02.setSpeed(motor02Speed, (err, res) => {});
+
+	oldDir = direction;
+}
+
+function stopMotors () {
+	motor01.stop((err, res) => {
+		// TODO
+	});
+	motor02.stop((err, res) => {
+		// TODO
+	});
 }
 
 function startVideoStream () {
-    if (!isVideoStreamOn && isOpencvEnabled) {
-        videoStream.on('data', function (matrix) {
-            // Ici, trop de data en une seul fois...
-            // https://github.com/js-platform/node-webrtc/issues/156
-            // Le Buffer est une class node !!!
-            var str = matrix.toBuffer({
-                    ext: '.jpg',
-                    jpegQuality: 50
-                }).toString('base64');
+	if (!isVideoStreamOn && isOpencvEnabled) {
+		videoStream.on('data', function (matrix) {
+			// Ici, trop de data en une seul fois...
+			// https://github.com/js-platform/node-webrtc/issues/156
+			// Le Buffer est une class node !!!
+			var str = matrix.toBuffer({
+					ext: '.jpg',
+					jpegQuality: 50
+				}).toString('base64');
 
-            //console.log('Taille de la chaine: ', str.length);
-            videoChannels.forEach((channel) => {
-                channel.send(str.slice(0, 50000));
-            });
-        });
+			//console.log('Taille de la chaine: ', str.length);
+			videoChannels.forEach((channel) => {
+				channel.send(str.slice(0, 50000));
+			});
+		});
 
-        isVideoStreamOn = true;
-        videoStream.read();
-    } else {
-        fs.readFile('img/Under-construction.jpg', function(err, data) {
-            if (err) throw err;
-            var str = data.toString('base64');
-            videoChannel.send(str.slice(0, 50000))
-        });
-    }
+		isVideoStreamOn = true;
+		videoStream.read();
+	} else {
+		fs.readFile('img/Under-construction.jpg', function(err, data) {
+			if (err) throw err;
+			var str = data.toString('base64');
+			videoChannel.send(str.slice(0, 50000))
+		});
+	}
 }
 
 ws.connect(wsUrl, 'echo-protocol');
