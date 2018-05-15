@@ -105,7 +105,7 @@ const processSocketMessage = function (json, connec) {
 				channel.onmessage = function (e) {
 					console.info('Command channel on message: ', e.data);
 					//sendToBroker(e.data);
-					commandMotors(e.data);
+					commandMotors(JSON.parse(e.data));
 				};
 				channel.onopen = function () {
 					console.info('Command channel on open');
