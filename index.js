@@ -1,11 +1,11 @@
 const WebSocketClient = require('websocket').client,
 	wrtc = require('wrtc'),
 	fs = require('fs'),
-	amqp = require('amqplib/callback_api')
-	MotorHat = require('motor-hat');
+	amqp = require('amqplib/callback_api');
 
 let isOpencvEnabled,
 	opencv,
+	MotorHat,
 	motorSpec = {
 		address: 0X60,
 		dcs: [
@@ -13,13 +13,23 @@ let isOpencvEnabled,
 			'M3'
 		]
 	},
-	motorHat = MotorHat(motorSpec),
+	motorHat,
+	isMotorHatEnable = true,
 	oldDir;
 
-motorHat.init();
+// Load motor-hat
+try {
+	MotorHat = require('motor-hat');
+	motorHat = MotorHat(motorSpec);
 
-let motor01 = motorHat.dcs[0],
-	motor02 = motorHat.dcs[1];
+	motorHat.init();
+
+	let motor01 = motorHat.dcs[0],
+		motor02 = motorHat.dcs[1];
+} catch (err) {
+	isMotorHatEnable = false;
+	console.error('[Error] MotorHat not installed or not working.', err);
+}
 
 // Load opencv
 try {
@@ -204,7 +214,7 @@ function sendToBroker (obj) {
  * ```
  */
 function commandMotors (obj) {
-	if (!obj.direction.direction) return;
+	if (!obj.direction.direction || !isMotorHatEnable) return;
 
 	let direction = obj.direction.direction.y,
 		rotation = obj.direction.direction.x,
