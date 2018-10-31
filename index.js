@@ -86,7 +86,14 @@ const processSocketMessage = function (json, connec) {
 	switch (json.action) {
 		case 'INIT_PEER_CO':
 			var remoteDescription = new wrtc.RTCSessionDescription(json.remoteDescription);
-			peerCo = new wrtc.RTCPeerConnection();
+			const customRTCConfiguration = {
+				iceServers: [
+					{
+						urls: 'stun:stun.services.mozilla.com'
+					}
+				]
+			};
+			peerCo = new wrtc.RTCPeerConnection(customRTCConfiguration);
 
 			videoChannel = peerCo.createDataChannel('video', {
 				// UPD Semantics
